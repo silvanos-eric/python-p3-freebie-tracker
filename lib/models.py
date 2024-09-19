@@ -64,8 +64,11 @@ class Freebie(Base):
 
     # Foreign Keys definitions (relationships at the database level)
     dev_id = Column(Integer(), ForeignKey('devs.id'))
-    company_id = Column(Integer(), ForeignKey('companies.id'))
+    company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
 
     def __repr__(self):
         return f"Freebie(item-name={self.item_name}, " + \
             f"value={self.value})"
+
+    def print_details(self):
+        print(f"{self.dev} owns a {self.item_name} from {self.company.name}")

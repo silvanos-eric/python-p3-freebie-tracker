@@ -31,6 +31,8 @@ if __name__ == '__main__':
 
     # Delete all the freebies in the database.
     session.query(Freebie).delete()
+    session.query(Company).delete()
+    session.query(Dev).delete()
 
     # Create a fake object that can be used to generate fake data.
     fake = Faker()
@@ -85,9 +87,10 @@ if __name__ == '__main__':
     # Loop 30 times to create 30 freebie objects.
     for _ in range(30):
         # Create a new freebie object with a random swag item and a
-        # value between 1 and 3000.
+        # value between 1 and 3000, and a random company id.
         freebie = Freebie(item_name=random.choice(swag_items),
-                          value=random.randint(1, 3000))
+                          value=random.randint(1, 3000),
+                          company_id=random.randint(1, len(companies)))
         # Append the freebie object to the list of freebies.
         freebies.append(freebie)
 
