@@ -43,13 +43,15 @@ class Company(Base):
     def oldest_company(cls):
         return session.query(cls).order_by(cls.founding_year).first()
 
-    def give_freebie(dev, freebie):
+    def give_freebie(self, dev, freebie):
         if not isinstance(dev, Dev):
             raise TypeError('dev argument is not of type Dev.')
         if not isinstance(freebie, Freebie):
             raise TypeError('freebie argument is not of type freebie.')
         if freebie.dev_id:
             raise FreebieAlreadyGivenError
+        if freebie not in self.freebies:
+            raise FreebieNotMineToGiveError
         else:
             dev.freebies.append(freebie)
 
