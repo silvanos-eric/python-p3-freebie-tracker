@@ -69,6 +69,20 @@ class Dev(Base):
     def __repr__(self):
         return f'<Dev {self.name}>'
 
+    def received_one(self, item_name):
+        return any(freebie.item_name == item_name for freebie in self.freebies)
+
+    def give_away(self, dev, freebie):
+        if not isinstance(dev, Dev):
+            raise TypeError("dev argument must be of type Dev")
+        if not isinstance(freebie, Freebie):
+            raise TypeError("freebie argument must be of type Freebie")
+        if freebie not in self.freebies:
+            raise FreebieNotMineToGiveError
+        else:
+            freebie.dev = dev
+            session.commit()
+
 
 class Freebie(Base):
     # Mapped table name at the database level
@@ -92,4 +106,8 @@ class Freebie(Base):
 
 
 class FreebieAlreadyGivenError(Exception):
+    pass
+
+
+class FreebieNotMineToGiveError(Exception):
     pass
