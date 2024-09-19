@@ -1,5 +1,5 @@
-from sqlalchemy import ForeignKey, Column, Integer, String, MetaData, Table
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import ForeignKey, Column, Integer, String, MetaData, Table, create_engine
+from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 convention = {
@@ -7,7 +7,10 @@ convention = {
 }
 metadata = MetaData(naming_convention=convention)
 
+engine = create_engine('sqlite:///freebies.db')
 Base = declarative_base(metadata=metadata)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 companies_devs = Table('companies_devs',
                        Base.metadata,
@@ -35,6 +38,20 @@ class Company(Base):
 
     def __repr__(self):
         return f'<Company {self.name}>'
+
+    @classmethod
+    def oldest_company(cls):
+        return session.query(cls).order_by(cls.founding_year).first()
+
+    def give_freebie(dev, freebie):
+        if not isinstance(dev, Dev):
+            raise TypeError('dev argument is not of type Dev.')
+        if not isinstance(freebie, Freebie):
+            raise TypeError('freebie argument is not of type freebie.')
+        if freebie.dev_id:
+            raise FreebieAlreadyGivenError
+        else:
+            dev.freebies.append(freebie)
 
 
 class Dev(Base):
@@ -72,3 +89,7 @@ class Freebie(Base):
 
     def print_details(self):
         print(f"{self.dev} owns a {self.item_name} from {self.company.name}")
+
+
+class FreebieAlreadyGivenError(Exception):
+    pass
